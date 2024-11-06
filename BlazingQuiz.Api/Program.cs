@@ -1,5 +1,7 @@
 using BlazingQuiz.Api.Data;
 using BlazingQuiz.Api.Data.Entities;
+using BlazingQuiz.Api.Endpoints;
+using BlazingQuiz.Api.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +20,8 @@ builder.Services.AddDbContext<QuizContext>(options =>
     options.UseSqlServer(connectionString);
 });
 
+builder.Services.AddTransient<AuthService>();
+
 var app = builder.Build();
 #if DEBUG
 ApplyDbMigrations(app.Services);
@@ -32,6 +36,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+
+app.MapAuthEndpoints();
 
 app.Run();
 
