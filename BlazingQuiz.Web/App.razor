@@ -1,4 +1,6 @@
-﻿<Router AppAssembly="@typeof(App).Assembly">
+﻿
+
+<Router AppAssembly="@typeof(App).Assembly">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
         <FocusOnNavigate RouteData="@routeData" Selector="h1" />
@@ -10,3 +12,12 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+@inject QuizAuthStateProvider QuizAuthStateProvider
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await QuizAuthStateProvider.InitializeAsync();
+    }
+}

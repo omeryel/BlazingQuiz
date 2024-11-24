@@ -1,7 +1,28 @@
 ﻿@page "/"
+@using System.Security.Claims
+
+
+
+@inject QuizAuthStateProvider QuizAuthStateProvider
 
 <PageTitle>Home</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Hello, @QuizAuthStateProvider.User?.Name</h1>
 
 Welcome to your new app.
+
+<AuthorizeView>
+    <Authorizing>
+        <p>Authorizing...</p>
+    </Authorizing>
+    <NotAuthorized>
+        <p>Not Authorized</p>
+    </NotAuthorized>
+    <Authorized>
+        <p>Authorized : @context.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.Name)?.Value</p>
+    </Authorized>
+</AuthorizeView>
+
+@code {
+
+}
