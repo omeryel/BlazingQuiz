@@ -61,6 +61,10 @@ namespace BlazingQuiz.Web.Auth
 
                 await SetLoginAsync(user);
             }
+            catch(Exception ex)
+            {
+
+            }
             finally
             {
                 IsInitializing = false;

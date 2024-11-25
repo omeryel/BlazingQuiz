@@ -41,6 +41,7 @@ namespace BlazingQuiz.Api.Services
 
             var jwt = GenerateJwtToken(user);
             var loggedInUser = new LoggedInUser(user.Id, user.Name, user.Role, jwt);
+            //var loggedInUser = new LoggedInUser(user.Id, user.Name, nameof(UserRole.Student), jwt);
             return new AuthResponseDto(loggedInUser);
 
 
@@ -53,6 +54,7 @@ namespace BlazingQuiz.Api.Services
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.Role, user.Role)
+                //new Claim(ClaimTypes.Role, nameof(UserRole.Student))
                 ];
 
             var secretKey = _configuration.GetValue<string>("Jwt:Secret");

@@ -16,6 +16,7 @@ namespace BlazingQuiz.Shared
             [
                 new Claim(ClaimTypes.NameIdentifier, Id.ToString()),
                 new Claim(ClaimTypes.Name, Name),
+                new Claim(ClaimTypes.Role, Role),
                 new Claim(nameof(Token), Token)
             ];
 

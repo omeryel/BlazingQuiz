@@ -1,0 +1,6 @@
+﻿@using BlazingQuiz.Shared
+@using Microsoft.AspNetCore.Authorization
+
+
+@attribute  [Authorize(Roles = nameof(UserRole.Admin))]
+
