@@ -46,7 +46,8 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 builder.Services.AddTransient<AuthService>()
-    .AddTransient<CategoryService>();
+    .AddTransient<CategoryService>()
+    .AddTransient<QuizService>();
 
 builder.Services.AddCors(options =>
 {
