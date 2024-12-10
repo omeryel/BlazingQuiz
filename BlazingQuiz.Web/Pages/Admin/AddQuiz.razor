@@ -1,6 +1,130 @@
 ﻿@page "/admin/add-quiz"
 
 
-@code {
+@inject IQuizApi QuizApi
+@inject ICategoryApi CategoryApi
 
+<h1>Add a Quiz</h1>
+<hr />
+
+
+<EditForm Model="_quiz">
+    <DataAnnotationsValidator />
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="mb-3">
+                <label class="form-label">Category</label>
+                <InputSelect @bind-Value="_quiz.CategoryId" class="form-control">
+                    <option value="0">Select Category</option>
+                    @foreach (var c in _categories)
+                    {
+                        <option value="@c.Id">@c.Name</option>
+                    }
+                </InputSelect>
+                <ValidationMessage For="() => _quiz.CategoryId" />
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="mb-3">
+                <label class="form-label">Name</label>
+                <InputText @bind-Value="_quiz.Name" class="form-control" />
+                <ValidationMessage For="() => _quiz.Name" />
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="mb-3">
+                <label class="form-label">Total Questions</label>
+                <InputNumber @bind-Value="_quiz.TotalQuesions" class="form-control" />
+                <ValidationMessage For="() => _quiz.TotalQuesions" />
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="mb-3">
+                <label class="form-label">Time In Minutes</label>
+                <InputNumber @bind-Value="_quiz.TimeInMinutes" class="form-control" />
+                <ValidationMessage For="() => _quiz.TimeInMinutes" />
+            </div>
+        </div>
+
+        <hr />
+
+        <h4 class="">Questions</h4>
+
+        <ol>
+
+            @foreach (var item in _quiz.Questions)
+            {
+                var random = Guid.NewGuid();
+                <li class="shadow p-3  mb-3">
+                    <textarea type="text" @bind="item.Text" class="form-control" rows="3"></textarea>
+                    <h6>Options</h6>
+                    <ol>
+                        @foreach (var innerItem in item.Options)
+                        {
+                            <li class="p-2 mb-2">
+                                <div class="input-group">
+                                    <div class="input-group-text">
+                                        <input class="form-check-input mt-0" type="radio" checked="@(innerItem.IsCorrect)"
+                                        name="option_radio_@random"
+                                        @onchange="() => SetOptionsAsCorrentAnswer(item, innerItem)">
+                                    </div>
+                                    <input type="text" @bind="innerItem.Text" class="form-control">
+                                    <button class="btn btn-danger" type="button" @onclick="() => item.Options.Remove(innerItem)">X</button>
+                                </div>
+                            </li>
+                        }
+                    </ol>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-sm btn-info" @onclick="() => item.Options.Add(new())"> + Add Option</button>
+                    </div>
+
+                </li>
+            }
+        </ol>
+
+        <div class="mt-3 d-flex justify-content-center">
+            <button type="button" class="btn btn-info" @onclick="() => _quiz.Questions.Add(GetDefaultEmptyQuestion())">+ Add Question</button>
+        </div>
+
+        <hr />
+
+        <div class="col-sm-4">
+            <div class="mb-3">
+                <div class="form-check form-switch">
+                    <InputCheckbox @bind-Value="_quiz.IsActive" class="form-check-input" type="checkbox" role="switch" id="quizIsActive" />
+                    <label class="form-check-label" for="quizIsActive">Is Active</label>
+                </div>
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private QuizSaveDto _quiz = new();
+
+    private CategoryDto[] _categories = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        var question = GetDefaultEmptyQuestion();
+
+        _quiz.Questions = [question];
+
+        _categories = await CategoryApi.GetCategoriesAsync();
+    }
+
+    private QuestionDto GetDefaultEmptyQuestion() => new QuestionDto
+        {
+            Options = [new(), new()]
+        };
+
+    private void SetOptionsAsCorrentAnswer(QuestionDto questionDto, OptionDto optionDto)
+    {
+        foreach (var option in questionDto.Options)
+        {
+            option.IsCorrect = false;
+        }
+        optionDto.IsCorrect = true;
+    }
 }
