@@ -3,12 +3,14 @@
 
 @inject IQuizApi QuizApi
 @inject ICategoryApi CategoryApi
+@inject IJSRuntime jsRuntime
+@inject NavigationManager navigationManager
 
 <h1>Add a Quiz</h1>
 <hr />
 
 
-<EditForm Model="_quiz">
+<EditForm Model="_quiz" OnValidSubmit="SaveQuizAsync">
     <DataAnnotationsValidator />
     <div class="row">
         <div class="col-sm-3">
@@ -39,7 +41,7 @@
                 <ValidationMessage For="() => _quiz.TotalQuesions" />
             </div>
         </div>
-        <div class="col-sm-4">
+        <div class="col-sm-3">
             <div class="mb-3">
                 <label class="form-label">Time In Minutes</label>
                 <InputNumber @bind-Value="_quiz.TimeInMinutes" class="form-control" />
@@ -87,7 +89,7 @@
             <button type="button" class="btn btn-info" @onclick="() => _quiz.Questions.Add(GetDefaultEmptyQuestion())">+ Add Question</button>
         </div>
 
-        <hr />
+        
 
         <div class="col-sm-4">
             <div class="mb-3">
@@ -97,6 +99,10 @@
                 </div>
             </div>
         </div>
+
+        <hr />
+
+        <button type="submit" class="btn btn-success">Save Quiz</button> 
     </div>
 </EditForm>
 
@@ -126,5 +132,31 @@
             option.IsCorrect = false;
         }
         optionDto.IsCorrect = true;
+    }
+
+    private async Task SaveQuizAsync()
+    {
+        var errorMessage = _quiz.TryValidate();
+        if(!string.IsNullOrEmpty(errorMessage))
+        {
+            await ShowAlertAsync(errorMessage);
+            return;
+        }
+
+        var response = await QuizApi.SaveQuizAsync(_quiz);
+
+        if(!response.IsSuccess)
+        {
+            await ShowAlertAsync(response.ErrorMessage);
+            return;
+        }
+
+        navigationManager.NavigateTo("/admin/manage-quizes");
+
+    }
+
+    private async Task ShowAlertAsync(string message, string title = "Error")
+    {
+        await jsRuntime.InvokeVoidAsync("alert", $"{title}\n{message}");
     }
 }

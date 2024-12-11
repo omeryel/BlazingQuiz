@@ -3,6 +3,7 @@ using Refit;
 
 namespace BlazingQuiz.Web.Apis
 {
+    [Headers("Authorization: Bearer")]
     public interface IQuizApi
     {
         [Post("/api/quizes")]

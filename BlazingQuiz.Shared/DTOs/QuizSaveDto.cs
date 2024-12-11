@@ -27,5 +27,36 @@ namespace BlazingQuiz.Shared.DTOs
 
         public List<QuestionDto> Questions { get; set; } = [];
 
+        public string? TryValidate()
+        {
+            if (TotalQuesions != Questions.Count)
+            {
+                return "Number of questions does not match with Total Questions";
+
+            }
+
+            if (Questions.Any(x => string.IsNullOrWhiteSpace(x.Text)))
+            {
+                return "Question text is required";
+            }
+
+            if (Questions.Any(x => x.Options.Count < 2))
+            {
+                return "At least 2 Options are required for each questions";
+            }
+
+            if (Questions.Any(x => !x.Options.Any(o => o.IsCorrect)))
+            {
+                return "All options should have correct answer marked";
+            }
+            if (Questions.Any(x => x.Options.Any(o => string.IsNullOrWhiteSpace(o.Text))))
+            {
+                return "All options should have text";
+            }
+
+
+            return null;
+        }
+
     }
 }

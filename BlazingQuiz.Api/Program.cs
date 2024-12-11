@@ -83,7 +83,8 @@ app.UseAuthentication()
     .UseAuthorization();
 
 app.MapAuthEndpoints()
-    .MapCategoryEndpoints();
+    .MapCategoryEndpoints()
+    .MapQuizEndpoints();
 
 app.Run();
 
