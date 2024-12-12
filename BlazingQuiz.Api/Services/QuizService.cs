@@ -75,5 +75,29 @@ namespace BlazingQuiz.Api.Services
             }
 
         }
+
+        public async Task<QuizListDto[]> GetQuizesAsync()
+        {
+            return await _quizContext.Quizzes.Select(x => new QuizListDto
+            {
+                Id = x.Id,
+                Name = x.Name,
+                TimeInMinutes = x.TimeInMinutes,
+                TotalQuesions = x.TotalQuesions,
+                IsActive = x.IsActive,
+                CategoryName = x.Category.Name,
+                CategoryId = x.CategoryId,
+            }).ToArrayAsync();
+        }
+
+        public async Task<QuestionDto[]> GetQuizQuestions(Guid quizId)
+        {
+            return await _quizContext.Questions.Where(x => x.QuizId == quizId)
+                 .Select(x => new QuestionDto
+                 {
+                     Id = x.Id,
+                     Text = x.Text                     
+                 }).ToArrayAsync();
+        }
     }
 }

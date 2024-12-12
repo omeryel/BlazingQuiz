@@ -23,6 +23,13 @@ namespace BlazingQuiz.Api.Endpoints
                 return Results.Ok(await service.SaveQuizAsync(dto));
             });
 
+            quizGroup.MapGet("", async (QuizService service) => Results.Ok(await service.GetQuizesAsync()));
+
+            quizGroup.MapGet("{quizId:guid}/questions", async (Guid quizId, QuizService service) =>
+            {
+                return Results.Ok(await service.GetQuizQuestions(quizId));
+            });
+
             return builder;
         }
 

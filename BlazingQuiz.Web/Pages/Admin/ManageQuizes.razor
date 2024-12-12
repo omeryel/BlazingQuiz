@@ -1,6 +1,96 @@
 ﻿@page "/admin/manage-quizes"
+@using System.Diagnostics
 
+@inject IQuizApi QuizApi
+@inject ICategoryApi CategoryApi
+
+<div class="container">
+    <h1>Manage Quizes</h1>
+    <hr />
+
+    <div class="row">
+        <div class="col-sm-3 ms-auto">
+            <label class="form-label"> Select Category </label>
+            <select class="form-control" @bind="_selectedCategory" @bind:after="OnSelectedCategoryChanged">
+                <option value="0"> Select Category </option>
+                @foreach (var c in _categories)
+                {
+                    <option value="@c.Id">@c.Name</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        <table class="table table-strip table-hover">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Number Of Questions</th>
+                    <th>Time In Minutes</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (_filteredQuizes.Length == 0)
+                {
+                    <tr class="text-center">
+                        <td colspan="5" class="text-danger"> No Quizes Found </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in _filteredQuizes)
+                    {
+                        <tr>
+                            <td>@item.Name</td>
+                            <td>@item.CategoryName</td>
+                            <td>@item.TotalQuesions questions</td>
+                            <td>@item.TimeInMinutes minutes</td>
+                            <td>
+                                <div class="d-flex justify-content-around">
+                                    <button type="button" class="btn btn-sm btn-info"> View Questions</button>
+                                    <button type="button" class="btn btn-sm btn-primary"> Edit</button>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
 
 @code {
+    private QuizListDto[] _quizes = [];
+    private QuizListDto[] _filteredQuizes = [];
+    private CategoryDto[] _categories = [];
+    private int _selectedCategory;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var quizesTask = QuizApi.GetQuizesAsync();
+
+        _categories = await CategoryApi.GetCategoriesAsync();
+
+        _quizes = await quizesTask;
+        _filteredQuizes = _quizes;
+
+    }
+
+
+    private void OnSelectedCategoryChanged()
+    {
+        if (_selectedCategory == 0)
+        {
+            _filteredQuizes = _quizes;
+        }
+        else
+        {
+            _filteredQuizes = _quizes.Where(q => q.CategoryId == _selectedCategory).ToArray();
+        }
+    }
 
 }
