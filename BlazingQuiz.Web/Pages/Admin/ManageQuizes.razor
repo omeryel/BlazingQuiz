@@ -1,5 +1,6 @@
 ﻿@page "/admin/manage-quizes"
-@using System.Diagnostics
+@using BlazingQuiz.SharedComponents.Components
+
 
 @inject IQuizApi QuizApi
 @inject ICategoryApi CategoryApi
@@ -50,7 +51,7 @@
                             <td>@item.TimeInMinutes minutes</td>
                             <td>
                                 <div class="d-flex justify-content-around">
-                                    <button type="button" class="btn btn-sm btn-info"> View Questions</button>
+                                    <button type="button" class="btn btn-sm btn-info" @onclick="() => ViewQuestionsAsync(item)"> View Questions</button>
                                     <button type="button" class="btn btn-sm btn-primary"> Edit</button>
                                 </div>
                             </td>
@@ -63,11 +64,32 @@
 
 </div>
 
+
+@if (_showQuestionModal)
+{
+    <Modal Title="Questions"
+           OnActionButtonClick="() => _showQuestionModal = false"
+           OnCancelButtonClick="() => _showQuestionModal = false"
+           Size="ModalSize.Large">
+
+        @foreach (var item in _viewingQuestions)
+        {
+            <div class="mb-2 shadow p-2 border border-start border-success rounded-3">
+                @item.Text
+            </div>
+        }
+
+    </Modal>
+}
+
 @code {
     private QuizListDto[] _quizes = [];
     private QuizListDto[] _filteredQuizes = [];
     private CategoryDto[] _categories = [];
     private int _selectedCategory;
+
+    private QuestionDto[] _viewingQuestions = [];
+    private bool _showQuestionModal;
 
     protected override async Task OnInitializedAsync()
     {
@@ -91,6 +113,15 @@
         {
             _filteredQuizes = _quizes.Where(q => q.CategoryId == _selectedCategory).ToArray();
         }
+    }
+
+
+    private async Task ViewQuestionsAsync(QuizListDto q)
+    {
+        _viewingQuestions = await QuizApi.GetQuizQuestions(q.Id);
+
+
+        _showQuestionModal = true;
     }
 
 }
