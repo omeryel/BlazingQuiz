@@ -1,5 +1,6 @@
 ﻿using BlazingQuiz.Shared.DTOs;
 using Refit;
+using System.Threading.Tasks;
 
 namespace BlazingQuiz.Web.Apis
 {
@@ -16,6 +17,10 @@ namespace BlazingQuiz.Web.Apis
 
         [Get("/api/quizes/{quizId}/questions")]
         Task<QuestionDto[]> GetQuizQuestions(Guid quizId);
+
+
+        [Get("/api/quizes/{quizId}")]
+        Task<QuizSaveDto?> GetQuizToEditAsync(Guid quizId);
 
     }
 }

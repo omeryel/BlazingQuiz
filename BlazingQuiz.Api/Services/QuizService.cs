@@ -19,8 +19,9 @@ namespace BlazingQuiz.Api.Services
             {
                 Id = x.Id,
                 Text = x.Text,
-                Options = x.Options.Select(l => new Option()
+                Options = x.Options.Select(l => new Option
                 {
+                    Id = l.Id,
                     Text = l.Text,
                     IsCorrect = l.IsCorrect
                 }).ToArray()
@@ -54,7 +55,7 @@ namespace BlazingQuiz.Api.Services
                     dbQuiz.CategoryId = dto.CategoryId;
                     dbQuiz.IsActive = dto.IsActive;
                     dbQuiz.Name = dto.Name;
-                    dbQuiz.TotalQuesions = dto.TotalQuesions;
+                    dbQuiz.TotalQuestions = dto.TotalQuestions;
                     dbQuiz.TimeInMinutes = dto.TimeInMinutes;
                     dbQuiz.Questions = questions;
 
@@ -83,7 +84,7 @@ namespace BlazingQuiz.Api.Services
                 Id = x.Id,
                 Name = x.Name,
                 TimeInMinutes = x.TimeInMinutes,
-                TotalQuesions = x.TotalQuesions,
+                TotalQuestions = x.TotalQuestions,
                 IsActive = x.IsActive,
                 CategoryName = x.Category.Name,
                 CategoryId = x.CategoryId,
@@ -96,8 +97,36 @@ namespace BlazingQuiz.Api.Services
                  .Select(x => new QuestionDto
                  {
                      Id = x.Id,
-                     Text = x.Text                     
+                     Text = x.Text
                  }).ToArrayAsync();
+        }
+
+        public async Task<QuizSaveDto?> GetQuizToEditAsync(Guid quizId)
+        {
+            var quiz = await _quizContext.Quizzes
+                .Where(q => q.Id == quizId)
+                .Select(qz => new QuizSaveDto
+                {
+                    Id = qz.Id,
+                    CategoryId = qz.CategoryId,
+                    IsActive = qz.IsActive,
+                    Name = qz.Name,
+                    TimeInMinutes = qz.TimeInMinutes,
+                    TotalQuestions = qz.TotalQuestions,
+                    Questions = qz.Questions.Select(x => new QuestionDto
+                    {
+                        Id = x.Id,
+                        Text = x.Text,
+                        Options = x.Options.Select(o => new OptionDto
+                        {
+                            Id = o.Id,
+                            Text = o.Text,
+                            IsCorrect = o.IsCorrect,
+                        }).ToList()
+                    }).ToList()
+                }).FirstOrDefaultAsync();
+
+            return quiz;
         }
     }
 }

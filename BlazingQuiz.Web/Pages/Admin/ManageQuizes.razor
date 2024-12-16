@@ -5,9 +5,10 @@
 @inject IQuizApi QuizApi
 @inject ICategoryApi CategoryApi
 
+<SectionContent SectionName="pageTitle">Manage Quizes</SectionContent>
+
 <div class="container">
-    <h1>Manage Quizes</h1>
-    <hr />
+  
 
     <div class="row">
         <div class="col-sm-3 ms-auto">
@@ -47,12 +48,12 @@
                         <tr>
                             <td>@item.Name</td>
                             <td>@item.CategoryName</td>
-                            <td>@item.TotalQuesions questions</td>
+                            <td>@item.TotalQuestions questions</td>
                             <td>@item.TimeInMinutes minutes</td>
                             <td>
                                 <div class="d-flex justify-content-around">
                                     <button type="button" class="btn btn-sm btn-info" @onclick="() => ViewQuestionsAsync(item)"> View Questions</button>
-                                    <button type="button" class="btn btn-sm btn-primary"> Edit</button>
+                                    <a href="admin/edit-quiz/@item.Id" type="button" class="btn btn-sm btn-primary"> Edit</a>
                                 </div>
                             </td>
                         </tr>

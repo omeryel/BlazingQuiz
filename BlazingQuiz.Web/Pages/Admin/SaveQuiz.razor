@@ -1,4 +1,5 @@
 ﻿@page "/admin/add-quiz"
+@page "/admin/edit-quiz/{quizId:guid?}"
 
 
 @inject IQuizApi QuizApi
@@ -6,8 +7,9 @@
 @inject IJSRuntime jsRuntime
 @inject NavigationManager navigationManager
 
-<h1>Add a Quiz</h1>
-<hr />
+
+<SectionContent SectionName="pageTitle">@(IsEditCase ? "Update Quiz" : "Add New Quiz")</SectionContent>
+
 
 
 <EditForm Model="_quiz" OnValidSubmit="SaveQuizAsync">
@@ -37,8 +39,8 @@
         <div class="col-sm-3">
             <div class="mb-3">
                 <label class="form-label">Total Questions</label>
-                <InputNumber @bind-Value="_quiz.TotalQuesions" class="form-control" />
-                <ValidationMessage For="() => _quiz.TotalQuesions" />
+                <InputNumber @bind-Value="_quiz.TotalQuestions" class="form-control" />
+                <ValidationMessage For="() => _quiz.TotalQuestions" />
             </div>
         </div>
         <div class="col-sm-3">
@@ -49,18 +51,18 @@
             </div>
         </div>
 
-        <hr />
+        <hr class="my-2"/>
 
-        <h4 class="">Questions</h4>
+        <h5 class="fw-bold">Questions</h5>
 
-        <ol>
+        <ol class="mb-0">
 
             @foreach (var item in _quiz.Questions)
             {
                 var random = Guid.NewGuid();
-                <li class="shadow p-3  mb-3">
+                <li class="p-3  mb-3 bg-white rounded-3">
                     <textarea type="text" @bind="item.Text" class="form-control" rows="3"></textarea>
-                    <h6>Options</h6>
+                    <h6 class="my-2 fw-bold">Options</h6>
                     <ol>
                         @foreach (var innerItem in item.Options)
                         {
@@ -68,8 +70,8 @@
                                 <div class="input-group">
                                     <div class="input-group-text">
                                         <input class="form-check-input mt-0" type="radio" checked="@(innerItem.IsCorrect)"
-                                        name="option_radio_@random"
-                                        @onchange="() => SetOptionsAsCorrentAnswer(item, innerItem)">
+                                               name="option_radio_@random"
+                                               @onchange="() => SetOptionsAsCorrentAnswer(item, innerItem)">
                                     </div>
                                     <input type="text" @bind="innerItem.Text" class="form-control">
                                     <button class="btn btn-danger" type="button" @onclick="() => item.Options.Remove(innerItem)">X</button>
@@ -85,40 +87,72 @@
             }
         </ol>
 
-        <div class="mt-3 d-flex justify-content-center">
+        <div class="mt-0 mb-3 d-flex justify-content-center">
             <button type="button" class="btn btn-info" @onclick="() => _quiz.Questions.Add(GetDefaultEmptyQuestion())">+ Add Question</button>
         </div>
 
-        
-
-        <div class="col-sm-4">
-            <div class="mb-3">
-                <div class="form-check form-switch">
-                    <InputCheckbox @bind-Value="_quiz.IsActive" class="form-check-input" type="checkbox" role="switch" id="quizIsActive" />
-                    <label class="form-check-label" for="quizIsActive">Is Active</label>
-                </div>
-            </div>
-        </div>
 
         <hr />
 
-        <button type="submit" class="btn btn-success">Save Quiz</button> 
+        <div class="row mb-5">
+            <div class="col-sm-3 ms-auto">
+                <div class="form-check form-switch d-flex justify-content-end">
+                    <InputCheckbox @bind-Value="_quiz.IsActive" class="form-check-input" type="checkbox" role="switch" id="quizIsActive" />
+                    <label class="form-check-label ms-2" for="quizIsActive">Is Active</label>
+                </div>
+            </div>
+            <div class="col-sm-5 d-grid me-auto">
+                <button type="submit" class="btn btn-success">Save Quiz</button>
+            </div>
+        </div>
+
     </div>
 </EditForm>
 
 @code {
+
+    [Parameter]
+    public Guid? QuizId { get; set; }
+
+    private bool IsEditCase => QuizId.HasValue && QuizId.Value != Guid.Empty;
+
+
     private QuizSaveDto _quiz = new();
 
     private CategoryDto[] _categories = [];
 
+    protected override void OnParametersSet()
+    {
+        if (!QuizId.HasValue && _quiz.Id != Guid.Empty)
+        {
+            _quiz = new();
+            _quiz.Questions = [GetDefaultEmptyQuestion()];
+        }
+    }
+
     protected override async Task OnInitializedAsync()
     {
-        var question = GetDefaultEmptyQuestion();
+        if (IsEditCase)
+        {
+            var quiz = await QuizApi.GetQuizToEditAsync(QuizId!.Value);
+            if (quiz == null)
+            {
+                navigationManager.NavigateTo("admin/manage-quizes");
+                return;
+            }
+            _quiz = quiz;
+        }
+        else
+        {
+            var question = GetDefaultEmptyQuestion();
+            _quiz.Questions = [question];
+        }
 
-        _quiz.Questions = [question];
+
 
         _categories = await CategoryApi.GetCategoriesAsync();
     }
+
 
     private QuestionDto GetDefaultEmptyQuestion() => new QuestionDto
         {
@@ -137,7 +171,7 @@
     private async Task SaveQuizAsync()
     {
         var errorMessage = _quiz.TryValidate();
-        if(!string.IsNullOrEmpty(errorMessage))
+        if (!string.IsNullOrEmpty(errorMessage))
         {
             await ShowAlertAsync(errorMessage);
             return;
@@ -145,7 +179,7 @@
 
         var response = await QuizApi.SaveQuizAsync(_quiz);
 
-        if(!response.IsSuccess)
+        if (!response.IsSuccess)
         {
             await ShowAlertAsync(response.ErrorMessage);
             return;

@@ -15,7 +15,7 @@ namespace BlazingQuiz.Api.Endpoints
                 {
                     return Results.BadRequest("Please provide Questions");
                 }
-                if (dto.Questions.Count != dto.TotalQuesions)
+                if (dto.Questions.Count != dto.TotalQuestions)
                 {
                     return Results.BadRequest("Total questions count does not match with provided questions");
                 }
@@ -28,6 +28,11 @@ namespace BlazingQuiz.Api.Endpoints
             quizGroup.MapGet("{quizId:guid}/questions", async (Guid quizId, QuizService service) =>
             {
                 return Results.Ok(await service.GetQuizQuestions(quizId));
+            });
+
+            quizGroup.MapGet("{quizId:guid}", async (Guid quizId, QuizService service) =>
+            {
+                return Results.Ok(await service.GetQuizToEditAsync(quizId));
             });
 
             return builder;

@@ -17,7 +17,7 @@ namespace BlazingQuiz.Shared.DTOs
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
         
-        public int TotalQuesions { get; set; }
+        public int TotalQuestions { get; set; }
         
         public int TimeInMinutes { get; set; }
         public bool IsActive { get; set; }

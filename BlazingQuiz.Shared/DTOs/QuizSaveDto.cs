@@ -19,7 +19,7 @@ namespace BlazingQuiz.Shared.DTOs
         public int CategoryId { get; set; }
 
         [Range(1, int.MaxValue, ErrorMessage = "Please provide valid number of questions.")]
-        public int TotalQuesions { get; set; }
+        public int TotalQuestions { get; set; }
 
         [Range(1, 120, ErrorMessage = "Please provide valid time in minutes.")]
         public int TimeInMinutes { get; set; }
@@ -29,7 +29,7 @@ namespace BlazingQuiz.Shared.DTOs
 
         public string? TryValidate()
         {
-            if (TotalQuesions != Questions.Count)
+            if (TotalQuestions != Questions.Count)
             {
                 return "Number of questions does not match with Total Questions";
 

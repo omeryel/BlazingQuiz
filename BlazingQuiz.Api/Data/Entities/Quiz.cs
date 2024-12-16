@@ -11,7 +11,7 @@ namespace BlazingQuiz.Api.Data.Entities
         public string Name { get; set; }
 
         public int CategoryId { get; set; }
-        public int TotalQuesions { get; set; }
+        public int TotalQuestions { get; set; }
         public int TimeInMinutes { get; set; }
         public bool IsActive { get; set; }
 
