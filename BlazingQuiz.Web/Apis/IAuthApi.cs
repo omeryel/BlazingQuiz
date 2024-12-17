@@ -7,5 +7,9 @@ namespace BlazingQuiz.Web.Apis
     {
         [Post("/api/auth/login")]
         Task<AuthResponseDto> LoginAsync(LoginDto dto);
+
+
+        [Post("/api/auth/register")]
+        Task<QuizApiResponse> RegisterAsync(RegisterDto dto);
     }
 }

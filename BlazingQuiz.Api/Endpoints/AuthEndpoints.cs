@@ -12,6 +12,12 @@ namespace BlazingQuiz.Api.Endpoints
                 return Results.Ok(await authService.LoginAsync(dto));
             });
 
+
+            builder.MapPost("/api/auth/register", async (RegisterDto dto, AuthService authService) =>
+            {
+                return Results.Ok(await authService.RegisterAsync(dto));
+            });
+
             return builder;
         }
     }

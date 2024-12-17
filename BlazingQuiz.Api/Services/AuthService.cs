@@ -34,9 +34,14 @@ namespace BlazingQuiz.Api.Services
 
             var passwordResult = _passwordHasher.VerifyHashedPassword(user, user.PasswordHash, dto.Password);
 
-            if(passwordResult == PasswordVerificationResult.Failed)
+            if (passwordResult == PasswordVerificationResult.Failed)
             {
                 return new AuthResponseDto(default, "Incorrect Password");
+            }
+
+            if (!user.IsApproved)
+            {
+                return new AuthResponseDto(default, "Your account is not approved");
             }
 
             var jwt = GenerateJwtToken(user);
@@ -45,6 +50,36 @@ namespace BlazingQuiz.Api.Services
             return new AuthResponseDto(loggedInUser);
 
 
+        }
+
+        public async Task<QuizApiResponse> RegisterAsync(RegisterDto dto)
+        {
+            if (await _context.Users.AnyAsync(x => x.Email == dto.Email))
+            {
+                return QuizApiResponse.Fail("Email already exist. Try loggin in");
+            }
+
+            var user = new User
+            {
+                Email = dto.Email,
+                Name = dto.Name,
+                Phone = dto.Phone,
+                Role = nameof(UserRole.Student),
+                IsApproved = false,
+            };
+
+            user.PasswordHash = _passwordHasher.HashPassword(user, dto.Password);
+            _context.Users.Add(user);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return QuizApiResponse.Success();
+            }
+            catch (Exception ex)
+            {
+                return QuizApiResponse.Fail(ex.Message);
+            }
         }
 
 
@@ -62,10 +97,10 @@ namespace BlazingQuiz.Api.Services
             var signingCred = new SigningCredentials(symmetricKey, SecurityAlgorithms.HmacSha256);
 
             var jwtSecurityToken = new JwtSecurityToken(
-                issuer: _configuration.GetValue<string>("Jwt:Issuer"), 
+                issuer: _configuration.GetValue<string>("Jwt:Issuer"),
                 audience: _configuration.GetValue<string>("Jwt:Audience"),
-                claims: claims, 
-                expires: DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:ExpireInMinutes")), 
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(_configuration.GetValue<int>("Jwt:ExpireInMinutes")),
                 signingCredentials: signingCred);
 
             var token = new JwtSecurityTokenHandler().WriteToken(jwtSecurityToken);
