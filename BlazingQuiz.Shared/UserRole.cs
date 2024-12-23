@@ -11,4 +11,11 @@ namespace BlazingQuiz.Shared
         Admin,
         Student
     }
+
+    public enum UserApprovedFilter
+    {
+        All,
+        ApprovedOnly,
+        UnapprovedOnly
+    }
 }

@@ -34,6 +34,9 @@ static void ConfigureRefit(IServiceCollection services)
     services.AddRefitClient<IQuizApi>(GetRefitSettings)
         .ConfigureHttpClient(SetHttpClient);
 
+    services.AddRefitClient<IUserApi>(GetRefitSettings)
+        .ConfigureHttpClient(SetHttpClient);
+
     static void SetHttpClient(HttpClient httpClient) =>
         httpClient.BaseAddress = new Uri(ApiBaseUrl);
 

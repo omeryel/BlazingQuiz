@@ -1,0 +1,88 @@
+﻿@page "/admin/manage-students"
+
+
+@inject IUserApi UserApi
+
+
+<SectionContent SectionName="pageTitle">Manage Students</SectionContent>
+
+<div class="row">
+    <div class="col-sm-4 ms-auto mb-3">
+        <label class="form-label">
+            Filter by Approved Status
+        </label>
+        <select class="form-control" @bind="_filter" @bind:after="OnFilterChangedAsync">
+            @foreach (var f in Enum.GetValues<UserApprovedFilter>())
+            {
+                <option value="@f">@f</option>
+            }
+        </select>
+    </div>
+</div>
+
+<hr />
+
+<div class="row">
+
+    <QuickGrid ItemsProvider="_userProvider" Pagination="_paginationState" @ref="_grid" Class="table table-striped">
+        <PropertyColumn Property="u => u.Id" />
+        <PropertyColumn Property="u => u.Name" />
+        <PropertyColumn Property="u => u.Email" />
+        <PropertyColumn Property="u => u.Phone" />
+
+        <TemplateColumn Title="Is Approved?">
+            <div class="form-check form-switch ">
+                <input type="checkbox" class="form-check-input" role="switch" id="u_@context.Id" checked="@(context.IsApproved)" @onchange="() => OnUserApprovedToggleAsync(context)" />
+                <label class="form-check-label" for="u_@context.Id">
+                    @(context.IsApproved ? "Yes" : "No")
+                </label>
+            </div>
+        </TemplateColumn>
+    </QuickGrid>
+
+    <Paginator State="_paginationState" />
+
+</div>
+
+@code {
+    private QuickGrid<UserDto>? _grid;
+    private const int DefaultPageSize = 10;
+    private GridItemsProvider<UserDto> _userProvider;
+
+    private UserApprovedFilter _filter = UserApprovedFilter.All;
+
+    private PaginationState _paginationState = new PaginationState { ItemsPerPage = DefaultPageSize };
+
+
+    protected override void OnInitialized()
+    {
+        _userProvider = async requets =>
+        {
+            var pagedResult = await UserApi.GetUserAsync(_filter, requets.StartIndex, requets.Count ?? DefaultPageSize);
+            return GridItemsProviderResult.From(pagedResult.Records, pagedResult.TotalCount);
+        };
+    }
+
+
+    private async Task OnUserApprovedToggleAsync(UserDto user)
+    {
+        user.IsApproved = !user.IsApproved;
+        // _shouldReRender = false;
+        await UserApi.ToggleUserApprovedStatus(user.Id);
+        // _shouldReRender = true;
+    }
+
+    private bool _shouldReRender = true;
+
+    // protected override bool ShouldRender() => _shouldReRender;
+    // should render are added in order to solve ui render issue but there was not issue on my case so i commented them out
+
+    private async Task OnFilterChangedAsync()
+    {
+
+        if (_grid is not null)
+        {
+            await _grid.RefreshDataAsync();
+        };
+    }
+}

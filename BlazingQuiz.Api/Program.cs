@@ -47,7 +47,8 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddTransient<AuthService>()
     .AddTransient<CategoryService>()
-    .AddTransient<QuizService>();
+    .AddTransient<QuizService>()
+    .AddTransient<UserService>();
 
 builder.Services.AddCors(options =>
 {
@@ -56,7 +57,7 @@ builder.Services.AddCors(options =>
         var allowedOriginsStr = builder.Configuration.GetValue<string>("AllowedOrigins");
 
         var allowedOrigins = allowedOriginsStr.Split(",", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        
+
         p.AllowAnyHeader()
         .WithOrigins(allowedOrigins)
         .AllowAnyMethod();
@@ -84,7 +85,8 @@ app.UseAuthentication()
 
 app.MapAuthEndpoints()
     .MapCategoryEndpoints()
-    .MapQuizEndpoints();
+    .MapQuizEndpoints()
+    .MapUserEndpoints();
 
 app.Run();
 
