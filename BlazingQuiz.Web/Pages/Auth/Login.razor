@@ -1,4 +1,5 @@
 ﻿@page "/auth/login"
+@using BlazingQuiz.Shared
 @using BlazingQuiz.Web.Apis
 @using BlazingQuiz.Web.Auth
 @using System.Security.Claims
@@ -8,6 +9,7 @@
 @inject NavigationManager navigationManager
 @inject IAuthApi AuthApi
 @inject QuizAuthStateProvider QuizAuthStateProvider
+@inject IAppState AppState
 
 <div class="container">
     <div class="row vh-100">
@@ -85,6 +87,8 @@
 
         try
         {
+
+            AppState.ShowLoader("Logging In");
             var authResponse = await AuthApi.LoginAsync(_model);
 
             if (authResponse.HasError)
@@ -105,6 +109,7 @@
         }
         finally
         {
+            AppState.HideLoader();
             _isLoading = false;
         }
     }

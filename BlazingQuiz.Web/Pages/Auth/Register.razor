@@ -1,4 +1,5 @@
 ﻿@page "/auth/register"
+@using BlazingQuiz.Shared
 @using BlazingQuiz.SharedComponents.Components
 @using BlazingQuiz.Web.Apis
 @using BlazingQuiz.Web.Auth
@@ -9,6 +10,7 @@
 @inject NavigationManager navigationManager
 @inject IAuthApi AuthApi
 @inject QuizAuthStateProvider QuizAuthStateProvider
+@inject IAppState AppState
 
 <div class="container">
     <div class="row vh-100">
@@ -108,6 +110,7 @@
 
         try
         {
+            AppState.ShowLoader("Registering");
             var apiResponse = await AuthApi.RegisterAsync(_model);
 
             if (!apiResponse.IsSuccess)
@@ -119,7 +122,7 @@
             _showSuccessAlert = true;
 
 
-           
+
 
         }
         catch (Exception ex)
@@ -128,6 +131,7 @@
         }
         finally
         {
+            AppState.HideLoader();
             _isLoading = false;
         }
     }

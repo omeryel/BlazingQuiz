@@ -1,3 +1,4 @@
+using BlazingQuiz.Shared;
 using BlazingQuiz.Web;
 using BlazingQuiz.Web.Apis;
 using BlazingQuiz.Web.Auth;
@@ -15,6 +16,8 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddSingleton<QuizAuthStateProvider>();
 builder.Services.AddSingleton<AuthenticationStateProvider>(sp => sp.GetRequiredService<QuizAuthStateProvider>());
 builder.Services.AddAuthorizationCore();
+
+builder.Services.AddSingleton<IAppState, AppState>();
 
 
 ConfigureRefit(builder.Services);

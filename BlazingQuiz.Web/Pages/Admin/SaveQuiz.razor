@@ -6,6 +6,7 @@
 @inject ICategoryApi CategoryApi
 @inject IJSRuntime jsRuntime
 @inject NavigationManager navigationManager
+@inject IAppState AppState
 
 
 <SectionContent SectionName="pageTitle">@(IsEditCase ? "Update Quiz" : "Add New Quiz")</SectionContent>
@@ -51,7 +52,7 @@
             </div>
         </div>
 
-        <hr class="my-2"/>
+        <hr class="my-2" />
 
         <h5 class="fw-bold">Questions</h5>
 
@@ -132,6 +133,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        AppState.ShowLoader("Fetching Quiz");
         if (IsEditCase)
         {
             var quiz = await QuizApi.GetQuizToEditAsync(QuizId!.Value);
@@ -151,6 +153,8 @@
 
 
         _categories = await CategoryApi.GetCategoriesAsync();
+
+        AppState.HideLoader();
     }
 
 
@@ -170,6 +174,8 @@
 
     private async Task SaveQuizAsync()
     {
+
+        AppState.ShowLoader("Saving Quiz");
         var errorMessage = _quiz.TryValidate();
         if (!string.IsNullOrEmpty(errorMessage))
         {
@@ -184,7 +190,7 @@
             await ShowAlertAsync(response.ErrorMessage);
             return;
         }
-
+        AppState.HideLoader();
         navigationManager.NavigateTo("/admin/manage-quizes");
 
     }

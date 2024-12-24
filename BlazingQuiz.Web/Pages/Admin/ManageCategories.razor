@@ -1,6 +1,7 @@
 ﻿@page "/admin/manage-categories"
 
 @inject ICategoryApi CategoryApi
+@inject IAppState AppState
 
 <SectionContent SectionName="pageTitle">Manage Categories</SectionContent>
 
@@ -102,7 +103,9 @@
 
     protected override async Task OnInitializedAsync()
     {
+        AppState.ShowLoader("Fetching Categories");
         await LoadCategoriesAsync();
+        AppState.HideLoader();
     }
 
     private async Task LoadCategoriesAsync() =>
@@ -117,6 +120,7 @@
     {
         try
         {
+            AppState.ShowLoader("Saving Category");
             _isBusy = true;
             var response = await CategoryApi.SaveCategoryAsync(_category);
             if (!response.IsSuccess)
@@ -135,6 +139,7 @@
         finally
         {
             _isBusy = false;
+            AppState.HideLoader();
         }
 
 

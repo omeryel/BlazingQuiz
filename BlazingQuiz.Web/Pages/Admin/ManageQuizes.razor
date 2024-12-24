@@ -4,11 +4,12 @@
 
 @inject IQuizApi QuizApi
 @inject ICategoryApi CategoryApi
+@inject IAppState AppState
 
 <SectionContent SectionName="pageTitle">Manage Quizes</SectionContent>
 
 <div class="container">
-  
+
 
     <div class="row">
         <div class="col-sm-3 ms-auto">
@@ -94,13 +95,14 @@
 
     protected override async Task OnInitializedAsync()
     {
+        AppState.ShowLoader("Fetching Quizes");
         var quizesTask = QuizApi.GetQuizesAsync();
 
         _categories = await CategoryApi.GetCategoriesAsync();
 
         _quizes = await quizesTask;
         _filteredQuizes = _quizes;
-
+        AppState.HideLoader();
     }
 
 
@@ -119,10 +121,15 @@
 
     private async Task ViewQuestionsAsync(QuizListDto q)
     {
+        AppState.ShowLoader("Fetching Questions");
+
         _viewingQuestions = await QuizApi.GetQuizQuestions(q.Id);
 
 
         _showQuestionModal = true;
+
+        AppState.HideLoader();
+
     }
 
 }

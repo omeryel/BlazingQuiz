@@ -2,6 +2,7 @@
 
 
 @inject IUserApi UserApi
+@inject IAppState AppState
 
 
 <SectionContent SectionName="pageTitle">Manage Students</SectionContent>
@@ -58,18 +59,24 @@
     {
         _userProvider = async requets =>
         {
+            AppState.ShowLoader("Fetching Students");
             var pagedResult = await UserApi.GetUserAsync(_filter, requets.StartIndex, requets.Count ?? DefaultPageSize);
+            AppState.HideLoader();
             return GridItemsProviderResult.From(pagedResult.Records, pagedResult.TotalCount);
         };
+
     }
 
 
     private async Task OnUserApprovedToggleAsync(UserDto user)
     {
+        AppState.ShowLoader("Updating Status");
         user.IsApproved = !user.IsApproved;
         // _shouldReRender = false;
         await UserApi.ToggleUserApprovedStatus(user.Id);
         // _shouldReRender = true;
+
+        AppState.HideLoader();
     }
 
     private bool _shouldReRender = true;
