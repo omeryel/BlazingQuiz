@@ -1,0 +1,139 @@
+﻿@page "/student/home"
+@using BlazingQuiz.SharedComponents.Components
+
+
+@inject IAppState AppState
+@inject ICategoryApi CategoryApi
+@inject IStudentQuizApi StudentQuizApi
+@inject NavigationManager navigationManager
+@inject QuizState QuizState
+
+<SectionContent SectionName="pageTitle">Home</SectionContent>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-3 ms-auto">
+            <label class="form-label"> Select Category </label>
+            <select class="form-control" @bind="_selectedCategoryId" @bind:after="OnSelectedCategoryChanged">
+                <option value="0"> Select Category </option>
+                @foreach (var c in _categories)
+                {
+                    <option value="@c.Id">@c.Name</option>
+                }
+            </select>
+        </div>
+    </div>
+
+    <div class="row">
+        @if (!_isLoading && _quizes.Length == 0)
+        {
+            var message = _selectedCategoryId == 0 ? "There is no active quiz right now" : "There is no active quiez right now under the selected category";
+            <p class="h4 text-danger mt-5 text-center">@message</p>
+        }
+        else
+        {
+            @foreach (var q in _quizes)
+            {
+                <div class="col-sm-4 mb-3">
+
+                    <div class="box bg-white p-3">
+                        <h5 class="fw-bold">@q.Name</h5>
+                        <hr />
+
+                        <table class="table">
+                            <tr>
+                                <td>
+                                    <label class="fw-bold">Category</label>
+                                </td>
+                                <td>
+                                    <span>@q.CategoryName</span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <label class="fw-bold">No. of Question</label>
+                                </td>
+                                <td>
+                                    <span>@q.TotalQuestions question(s)</span>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <label class="fw-bold">Total Time</label>
+                                </td>
+                                <td>
+                                    <span>@q.TimeInMinutes</span>
+                                </td>
+                            </tr>
+
+                        </table>
+
+                        <hr />
+                        <button class="btn btn-sm btn-warning" type="button" @onclick="() => _startingQuiz = q">Start Quiz</button>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+
+@if (_startingQuiz != null)
+{
+    var title = $"Start {_startingQuiz.Name}";
+    <Modal Title="@title" OnCancelButtonClick="() => _startingQuiz = null" OnActionButtonClick="StartQuiz">
+        <p class="m-0 p-3">Do you want to start this quiz? <br/> You will not be able to pause the quiz.</p>
+
+
+    </Modal>
+}
+
+@code {
+    private CategoryDto[] _categories = [];
+    private QuizListDto[] _quizes = [];
+    private bool _isLoading;
+    private int _selectedCategoryId;
+    private QuizListDto? _startingQuiz;
+
+    protected override async Task OnInitializedAsync()
+    {
+        AppState.ShowLoader("Fetching catories and quizes");
+
+        try
+        {
+            _isLoading = true;
+            var categoriesTask = CategoryApi.GetCategoriesAsync();
+
+
+            _quizes = await StudentQuizApi.GetActiveQuizesAsync(_selectedCategoryId);
+            _categories = await categoriesTask;
+
+        }
+        catch (Exception e)
+        {
+            throw;
+        }
+        finally
+        {
+            _isLoading = false;
+            AppState.HideLoader();
+        }
+    }
+
+
+    private async Task OnSelectedCategoryChanged()
+    {
+        AppState.ShowLoader("Fetching quizes");
+        _quizes = await StudentQuizApi.GetActiveQuizesAsync(_selectedCategoryId);
+        AppState.HideLoader();
+
+    }
+
+    private void StartQuiz(){
+        QuizState.SetQuiz(_startingQuiz);
+        navigationManager.NavigateTo("student/quiz");
+    }
+
+}

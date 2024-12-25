@@ -18,6 +18,7 @@ builder.Services.AddSingleton<AuthenticationStateProvider>(sp => sp.GetRequiredS
 builder.Services.AddAuthorizationCore();
 
 builder.Services.AddSingleton<IAppState, AppState>();
+builder.Services.AddSingleton<QuizState>();
 
 
 ConfigureRefit(builder.Services);
@@ -38,6 +39,9 @@ static void ConfigureRefit(IServiceCollection services)
         .ConfigureHttpClient(SetHttpClient);
 
     services.AddRefitClient<IUserApi>(GetRefitSettings)
+        .ConfigureHttpClient(SetHttpClient);
+
+    services.AddRefitClient<IStudentQuizApi>(GetRefitSettings)
         .ConfigureHttpClient(SetHttpClient);
 
     static void SetHttpClient(HttpClient httpClient) =>
