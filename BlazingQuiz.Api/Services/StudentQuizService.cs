@@ -2,9 +2,6 @@
 using BlazingQuiz.Api.Data.Entities;
 using BlazingQuiz.Shared.DTOs;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Specialized;
-using System.Runtime.InteropServices;
-using System.Xml.Schema;
 
 namespace BlazingQuiz.Api.Services
 {

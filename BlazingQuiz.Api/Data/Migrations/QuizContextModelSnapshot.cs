@@ -216,7 +216,7 @@ namespace BlazingQuiz.Api.Data.Migrations
                             Email = "admin@mail.com",
                             IsApproved = true,
                             Name = "Admin",
-                            PasswordHash = "AQAAAAIAAYagAAAAEIaSXYuo7JDSNacvSeNEyiVZwlTXry8w/K/EkM1P73QjQ7YHMiqdss3X9mCNF7Zq7w==",
+                            PasswordHash = "AQAAAAIAAYagAAAAELwQ9RnoxrDZ3BS244FRgyzqsmMrddrwBb8sOtI2NmH5DJ9mTWbvJtQ7QZR/Di8dOw==",
                             Phone = "1234567890",
                             Role = "Admin"
                         });
@@ -277,15 +277,15 @@ namespace BlazingQuiz.Api.Data.Migrations
             modelBuilder.Entity("BlazingQuiz.Api.Data.Entities.StudentQuizQuestion", b =>
                 {
                     b.HasOne("BlazingQuiz.Api.Data.Entities.Question", "Question")
-                        .WithMany()
+                        .WithMany("StudentQuizQuestions")
                         .HasForeignKey("QuestionId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("BlazingQuiz.Api.Data.Entities.StudentQuiz", "StudentQuiz")
-                        .WithMany()
+                        .WithMany("StudentQuizQuestions")
                         .HasForeignKey("StudentQuizId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Question");
@@ -296,11 +296,18 @@ namespace BlazingQuiz.Api.Data.Migrations
             modelBuilder.Entity("BlazingQuiz.Api.Data.Entities.Question", b =>
                 {
                     b.Navigation("Options");
+
+                    b.Navigation("StudentQuizQuestions");
                 });
 
             modelBuilder.Entity("BlazingQuiz.Api.Data.Entities.Quiz", b =>
                 {
                     b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("BlazingQuiz.Api.Data.Entities.StudentQuiz", b =>
+                {
+                    b.Navigation("StudentQuizQuestions");
                 });
 #pragma warning restore 612, 618
         }

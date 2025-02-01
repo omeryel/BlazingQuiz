@@ -31,6 +31,18 @@ namespace BlazingQuiz.Api.Data
         {
             modelBuilder.Entity<StudentQuizQuestion>().HasKey(s => new { s.StudentQuizId, s.QuestionId });
 
+            modelBuilder.Entity<StudentQuizQuestion>()
+                .HasOne(x => x.StudentQuiz)
+                .WithMany(l => l.StudentQuizQuestions)
+                .OnDelete(DeleteBehavior.NoAction);
+
+
+            modelBuilder.Entity<StudentQuizQuestion>()
+               .HasOne(x => x.Question)
+               .WithMany(l => l.StudentQuizQuestions)
+               .OnDelete(DeleteBehavior.NoAction);
+
+
 
             base.OnModelCreating(modelBuilder);
 
