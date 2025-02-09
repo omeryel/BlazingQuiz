@@ -47,40 +47,22 @@ namespace BlazingQuiz.Api.Endpoints
                 return Results.Ok(response);
             });
 
-            quizGroup.MapPost("/{studentQuizId:int}/submit", async (int studentQuizId, StudentQuizQuestionResponseDto dto, ClaimsPrincipal principal, StudentQuizService service) =>
+            quizGroup.MapPost("/{studentQuizId:int}/submit", async (int studentQuizId, ClaimsPrincipal principal, StudentQuizService service) =>
             {
-                var studentId = GetStudentId(principal);
-                if (studentQuizId != dto.StudentQuizId)
-                {
-                    return Results.Unauthorized();
-                }
-
-                var response = await service.SubmitQuizAsync(studentQuizId, studentId);
+                var response = await service.SubmitQuizAsync(studentQuizId, principal.GetStudentId());
                 return Results.Ok(response);
             });
 
-            quizGroup.MapPost("/{studentQuizId:int}/auto-submit", async (int studentQuizId, StudentQuizQuestionResponseDto dto, ClaimsPrincipal principal, StudentQuizService service) =>
+            quizGroup.MapPost("/{studentQuizId:int}/auto-submit", async (int studentQuizId, ClaimsPrincipal principal, StudentQuizService service) =>
             {
-                var studentId = GetStudentId(principal);
-                if (studentQuizId != dto.StudentQuizId)
-                {
-                    return Results.Unauthorized();
-                }
-
-                var response = await service.AutoSubmitQuizAsync(studentQuizId, studentId);
+                var response = await service.AutoSubmitQuizAsync(studentQuizId, principal.GetStudentId());
                 return Results.Ok(response);
             });
 
 
-            quizGroup.MapPost("/{studentQuizId:int}/exit", async (int studentQuizId, StudentQuizQuestionResponseDto dto, ClaimsPrincipal principal, StudentQuizService service) =>
+            quizGroup.MapPost("/{studentQuizId:int}/exit", async (int studentQuizId, ClaimsPrincipal principal, StudentQuizService service) =>
             {
-                var studentId = GetStudentId(principal);
-                if (studentQuizId != dto.StudentQuizId)
-                {
-                    return Results.Unauthorized();
-                }
-
-                var response = await service.ExitQuizAsync(studentQuizId, studentId);
+                var response = await service.ExitQuizAsync(studentQuizId, principal.GetStudentId());
                 return Results.Ok(response);
             });
 

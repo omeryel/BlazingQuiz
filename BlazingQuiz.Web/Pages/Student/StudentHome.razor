@@ -137,7 +137,7 @@
         try
         {
             QuizApiResponse<int> response = await StudentQuizApi.StartQuizAsync(_startingQuiz.Id);
-            if (response.IsSuccess)
+            if (!response.IsSuccess)
             {
                 return;
             }
