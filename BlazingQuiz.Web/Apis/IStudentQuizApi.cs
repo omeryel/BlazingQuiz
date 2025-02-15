@@ -17,7 +17,7 @@ namespace BlazingQuiz.Web.Apis
         Task<QuizApiResponse<int>> StartQuizAsync(Guid quizId);
 
         [Get("/api/student/quiz/{studentQuizId}/next-question")]
-        Task<QuizApiResponse<QuestionDto>> GetNextQuestionForQuizAsync(int studentQuizId);
+        Task<QuizApiResponse<QuestionDto?>> GetNextQuestionForQuizAsync(int studentQuizId);
 
         [Post("/api/student/quiz/{studentQuizId}/save-response")]
         Task<QuizApiResponse> SaveQuestionResponseAsync(int studentQuizId, StudentQuizQuestionResponseDto dto);
