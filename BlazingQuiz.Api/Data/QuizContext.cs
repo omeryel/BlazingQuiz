@@ -9,7 +9,7 @@ namespace BlazingQuiz.Api.Data
     {
         private readonly IPasswordHasher<User> _passwordHasher;
 
-        public QuizContext(DbContextOptions options, IPasswordHasher<User> passwordHasher) : base(options)
+        public QuizContext(DbContextOptions<QuizContext> options, IPasswordHasher<User> passwordHasher) : base(options)
         {
             _passwordHasher = passwordHasher;
         }

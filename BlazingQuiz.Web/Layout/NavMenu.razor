@@ -14,17 +14,14 @@
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
     <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="/student/home" Match="NavLinkMatch.All">
-                Home
-            </NavLink>
-
-        </div>
-
         <AuthorizeView>
             <Authorized>
                 <AuthorizeView Roles="@(nameof(UserRole.Admin))" Context="adminContext">
-
+                    <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="/admin/home" Match="NavLinkMatch.All">
+                            Home
+                        </NavLink>
+                    </div>
                     <div class="nav-item px-3">
                         <NavLink class="nav-link" href="admin/manage-categories">
                             Manage Categories
@@ -51,6 +48,11 @@
                 </AuthorizeView>
                 <AuthorizeView Roles="@(nameof(UserRole.Student))" Context="studentContext">
                     <div class="nav-item px-3">
+                        <NavLink class="nav-link" href="/student/home" Match="NavLinkMatch.All">
+                            Home
+                        </NavLink>
+                    </div>
+                    <div class="nav-item px-3">
                         <NavLink class="nav-link" href="student/my-quizes">
                             My Quiz
                         </NavLink>
@@ -64,7 +66,7 @@
                 </div>
             </Authorized>
         </AuthorizeView>
-        
+
 
 
 
