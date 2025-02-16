@@ -4,7 +4,7 @@
 
 @if (AppState.LoadingText != null)
 {
-    <div class="fullscreen d-flex justify-content-center align-items-center">
+    <div class="fullscreen d-flex justify-content-center align-items-center" style="z-index:2049;">
         <div class="overlay fullscreen"></div>
         <div class="bg-white p-3 shadow rounded" style="z-index:2049;">
             <span class="h5">@AppState.LoadingText</span>

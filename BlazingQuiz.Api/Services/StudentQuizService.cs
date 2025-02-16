@@ -207,5 +207,26 @@ namespace BlazingQuiz.Api.Services
 
         }
 
+        public async Task<PagedResult<StudentQuizDto>> GetStudentQuizesAsync(int studentId, int startIndex, int pageSize)
+        {
+            var query = _context.StudentQuizzes.Where(x => x.StudentId == studentId).AsQueryable();
+
+            var count = await query.CountAsync();
+
+            var quizes = await query.OrderByDescending(x => x.StartedOn).Skip(startIndex).Take(pageSize)
+                .Select(x => new StudentQuizDto
+                {
+                    Id = x.Id,
+                    QuizId = x.QuizId,
+                    QuizName = x.Quiz.Name,
+                    CategoryName = x.Quiz.Category.Name,
+                    Status = x.Status,
+                    StartedOn = x.StartedOn,
+                    CompletedOn = x.CompletedOn
+                }).ToArrayAsync();
+
+            return new PagedResult<StudentQuizDto>(quizes, count);
+        }
+
     }
 }

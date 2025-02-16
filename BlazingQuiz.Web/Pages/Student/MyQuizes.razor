@@ -1,6 +1,55 @@
 ﻿@page "/student/my-quizes"
 
+@inject IAppState AppState
+@inject IStudentQuizApi StudentQuizApi
+
+<SectionContent SectionName="pageTitle">My Quizes</SectionContent>
+
+
+<div class="container">
+    <QuickGrid ItemsProvider="_itemsProvider" Pagination="_paginationState" Class="table table-striped table-hover">
+        <PropertyColumn Property="q => q.QuizName" Title="Quiz Name" />
+        <PropertyColumn Property="q => q.CategoryName" Title="Category Name" />
+        <PropertyColumn Property="q => q.Status" Title="Status" />
+        <PropertyColumn Property="q => q.StartedOn" Title="Started" Format="dd MM yyyy hh:mm" />
+        <TemplateColumn Title="Completed">
+            @if (context.CompletedOn != null)
+            {
+                <span>@context.CompletedOn.Value.ToString("dd MM yyyy hh: mm")</span>
+            }
+            else
+            {
+                if (context.Status == "Exited")
+                {
+                    <span>Quiz Exited</span>
+                }
+                else
+                {
+                    <span>-</span>
+                }
+            }
+        </TemplateColumn>
+        <PropertyColumn Property="q => q.Score" Class="text-center" />
+    </QuickGrid>
+    <Paginator State="_paginationState" />
+</div>
 
 @code {
+    const int DefaultPageSize = 10;
+    private GridItemsProvider<StudentQuizDto> _itemsProvider;
+
+
+    private PaginationState _paginationState = new PaginationState { ItemsPerPage = DefaultPageSize };
+
+    protected override void OnInitialized()
+    {
+        _itemsProvider = async (request) =>
+        {
+            AppState.ShowLoader("Fetching quizes");
+            var pagedResult = await StudentQuizApi.GetStudentQuizesAsync(request.StartIndex, request.Count ?? DefaultPageSize);
+            AppState.HideLoader();
+            return GridItemsProviderResult.From(pagedResult.Records, pagedResult.TotalCount);
+        };
+    }
 
 }
