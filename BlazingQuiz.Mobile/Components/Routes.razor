@@ -1,4 +1,4 @@
-﻿@using BlazingQuiz.Shared.Components.Auth
+﻿
 <Router AppAssembly="@typeof(MauiProgram).Assembly" AdditionalAssemblies="new []{typeof(BlazingQuiz.Shared.Components.Auth.QuizAuthStateProvider).Assembly}">
     <Found Context="routeData">
         <RouteView RouteData="@routeData" DefaultLayout="@typeof(Layout.MainLayout)" />
@@ -7,11 +7,3 @@
 </Router>
 
 
-@inject QuizAuthStateProvider QuizAuthStateProvider
-
-@code {
-    protected override async Task OnInitializedAsync()
-    {
-        await QuizAuthStateProvider.InitializeAsync();
-    }
-}

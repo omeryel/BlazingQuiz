@@ -15,14 +15,16 @@ public class QuizAuthStateProvider : AuthenticationStateProvider
     private Task<AuthenticationState> _authStateTask;
     private readonly IJSRuntime _jsRuntime;
     private readonly NavigationManager _navigationManager;
+    private readonly IStorageService _storageService;
     public bool IsInitializing { get; private set; } = true;
 
-    public QuizAuthStateProvider(IJSRuntime jsRuntime, NavigationManager navigationManager)
+    public QuizAuthStateProvider(IJSRuntime jsRuntime, NavigationManager navigationManager, IStorageService storageService)
     {
 
         _jsRuntime = jsRuntime;
         _navigationManager = navigationManager;
         SetAuthStateTask();
+        _storageService = storageService;
     }
 
     public override Task<AuthenticationState> GetAuthenticationStateAsync() => _authStateTask;
@@ -36,7 +38,8 @@ public class QuizAuthStateProvider : AuthenticationStateProvider
         User = user;
         SetAuthStateTask();
         NotifyAuthenticationStateChanged(_authStateTask);
-        await _jsRuntime.InvokeVoidAsync("localStorage.setItem", UserDataKey, user.ToJson());
+        await _storageService.SetItem(UserDataKey, user.ToJson());
+
     }
 
     public async Task SetLogoutAsync()
@@ -44,35 +47,52 @@ public class QuizAuthStateProvider : AuthenticationStateProvider
         User = null;
         SetAuthStateTask();
         NotifyAuthenticationStateChanged(_authStateTask);
+        await _storageService.RemoveItem(UserDataKey);
         await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", UserDataKey);
     }
 
     public async Task InitializeAsync()
     {
+        await InitializeAsync(redirectToLogin: true);
+    }
+
+    public async Task<bool> InitializeAsync(bool redirectToLogin = true)
+    {
         try
         {
-            var udata = await _jsRuntime.InvokeAsync<string?>("localStorage.getItem", UserDataKey);
+            var udata = await _storageService.GetItem(UserDataKey);
             if (string.IsNullOrWhiteSpace(udata))
             {
-                RedirectLogin();
-                return;
+                if (redirectToLogin)
+                {
+                    RedirectLogin();
+                }
+                return false;
             }
 
             var user = LoggedInUser.LoadFrom(udata);
             if (user == null || user.Id == 0)
             {
-                RedirectLogin();
-                return;
+                if (redirectToLogin)
+                {
+                    RedirectLogin();
+                }
+                return false;
             }
 
             if (!IsTokenValid(user.Token))
             {
-                RedirectLogin();
-                return;
+                if (redirectToLogin)
+                {
+                    RedirectLogin();
+                }
+                return false;
             }
 
 
             await SetLoginAsync(user);
+
+            return true;
         }
         catch (Exception ex)
         {
@@ -81,9 +101,8 @@ public class QuizAuthStateProvider : AuthenticationStateProvider
         finally
         {
             IsInitializing = false;
-
         }
-
+        return false;
     }
 
     private void RedirectLogin()

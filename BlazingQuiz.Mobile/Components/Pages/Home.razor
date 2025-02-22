@@ -1,5 +1,23 @@
 ﻿@page "/"
 
+@using BlazingQuiz.Shared.Components.Auth
+@inject NavigationManager navigationManager
+
 <h1>Hello, world!</h1>
 
 Welcome to your new app.
+
+
+@inject QuizAuthStateProvider QuizAuthStateProvider
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var isSuccess = await QuizAuthStateProvider.InitializeAsync(redirectToLogin: false);
+        if (!isSuccess)
+        {
+            navigationManager.NavigateTo("auth/login", replace: true);
+            return;
+        }
+    }
+}
