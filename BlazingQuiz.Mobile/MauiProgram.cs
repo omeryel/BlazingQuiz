@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using BlazingQuiz.Shared.Components.Auth;
+using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.Extensions.Logging;
 
 namespace BlazingQuiz.Mobile
 {
@@ -20,6 +22,11 @@ namespace BlazingQuiz.Mobile
     		builder.Services.AddBlazorWebViewDeveloperTools();
     		builder.Logging.AddDebug();
 #endif
+
+            builder.Services.AddCascadingAuthenticationState();
+            builder.Services.AddSingleton<QuizAuthStateProvider>();
+            builder.Services.AddSingleton<AuthenticationStateProvider>(sp => sp.GetRequiredService<QuizAuthStateProvider>());
+            builder.Services.AddAuthorizationCore();
 
             return builder.Build();
         }

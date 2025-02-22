@@ -1,7 +1,7 @@
 using BlazingQuiz.Shared;
+using BlazingQuiz.Shared.Components.Auth;
 using BlazingQuiz.Web;
 using BlazingQuiz.Web.Apis;
-using BlazingQuiz.Web.Auth;
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;

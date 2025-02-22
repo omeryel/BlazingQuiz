@@ -15,9 +15,13 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.1.2" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\BlazingQuiz.SharedComponents\BlazingQuiz.SharedComponents.csproj" />
+  <ItemGroup>    
+    <ProjectReference Include="..\BlazingQuiz.SharedComponents\BlazingQuiz.Shared.Components.csproj" />    
     <ProjectReference Include="..\BlazingQuiz.Shared\BlazingQuiz.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Auth\" />
   </ItemGroup>
 
 </Project>

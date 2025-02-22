@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazingQuiz.Api", "BlazingQ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazingQuiz.Shared", "BlazingQuiz.Shared\BlazingQuiz.Shared.csproj", "{6D76227C-CBF2-4F98-B187-485B980985B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazingQuiz.SharedComponents", "BlazingQuiz.SharedComponents\BlazingQuiz.SharedComponents.csproj", "{122324F3-9CC7-48A2-9A30-F4BB3E0E7FE5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazingQuiz.Shared.Components", "BlazingQuiz.SharedComponents\BlazingQuiz.Shared.Components.csproj", "{122324F3-9CC7-48A2-9A30-F4BB3E0E7FE5}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazingQuiz.Mobile", "BlazingQuiz.Mobile\BlazingQuiz.Mobile.csproj", "{43010F37-68D3-47F4-99BD-5C1438593CEB}"
 EndProject

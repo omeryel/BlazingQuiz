@@ -65,7 +65,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BlazingQuiz.SharedComponents\BlazingQuiz.SharedComponents.csproj" />
+      <ProjectReference Include="..\BlazingQuiz.SharedComponents\BlazingQuiz.Shared.Components.csproj" />
       <ProjectReference Include="..\BlazingQuiz.Shared\BlazingQuiz.Shared.csproj" />
     </ItemGroup>
 
