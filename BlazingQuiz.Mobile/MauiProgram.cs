@@ -6,6 +6,17 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.Extensions.Logging;
 using Refit;
 
+
+
+#if ANDROID
+using Xamarin.Android.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
+#elif IOS
+using Security;
+
+#endif
+
 namespace BlazingQuiz.Mobile
 {
     public static class MauiProgram
@@ -40,12 +51,13 @@ namespace BlazingQuiz.Mobile
             return builder.Build();
         }
 
+        private static readonly string ApiBaseUrl = DeviceInfo.Platform == DevicePlatform.Android ? "https://10.0.2.2:7292" : "https://localhost:7292";
 
         static void ConfigureRefit(IServiceCollection services)
         {
-            const string ApiBaseUrl = "https://localhost:7292";
 
-            services.AddRefitClient<IAuthApi>()
+
+            services.AddRefitClient<IAuthApi>(GetRefitSettings)
                 .ConfigureHttpClient(SetHttpClient);
 
 
@@ -60,7 +72,32 @@ namespace BlazingQuiz.Mobile
 
                 return new RefitSettings
                 {
-                    AuthorizationHeaderValueGetter = (_, __) => Task.FromResult(authStateProvider.User?.Token ?? string.Empty)
+                    AuthorizationHeaderValueGetter = (_, __) => Task.FromResult(authStateProvider.User?.Token ?? string.Empty),
+                    HttpMessageHandlerFactory = () =>
+                    {
+#if ANDROID
+                        var androidMessageHandler = new AndroidMessageHandler();
+                        androidMessageHandler.ServerCertificateCustomValidationCallback =
+                        (HttpRequestMessage requestMessage, X509Certificate2? x509Certificate, X509Chain? x509Chain, SslPolicyErrors sslPolicyErrors) =>
+                        x509Certificate?.Issuer == "CN=localhost" || sslPolicyErrors == SslPolicyErrors.None;
+
+                        return androidMessageHandler;
+#elif IOS
+
+                        var nsUrlSessionHandler = new NSUrlSessionHandler();
+                        nsUrlSessionHandler.TrustOverrideForUrl =
+                        (NSUrlSessionHandler sender, string url, SecTrust trust) =>
+                        url.StartsWith("https://localhost");
+                        return nsUrlSessionHandler;
+#endif
+
+
+                        return null;
+
+
+
+
+                    }
                 };
             }
         }
