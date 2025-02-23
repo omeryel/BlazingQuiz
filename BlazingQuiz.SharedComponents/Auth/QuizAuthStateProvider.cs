@@ -48,7 +48,6 @@ public class QuizAuthStateProvider : AuthenticationStateProvider
         SetAuthStateTask();
         NotifyAuthenticationStateChanged(_authStateTask);
         await _storageService.RemoveItem(UserDataKey);
-        await _jsRuntime.InvokeVoidAsync("localStorage.removeItem", UserDataKey);
     }
 
     public async Task InitializeAsync()
